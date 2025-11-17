@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">AI Credit Estimator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and basic styling */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .task-card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease-in-out;
+        }
+        .task-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .plan-card {
+            transform: scale(0.95);
+            transition: all 0.3s ease-in-out;
+            opacity: 0.7;
+        }
+        .plan-card.active {
+            transform: scale(1.0);
+            border: 3px solid #10b981; /* Tailwind emerald-500 */
+            opacity: 1;
+        }
+        .input-group label {
+            font-size: 0.875rem; /* sm */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="app" class="max-w-7xl mx-auto">
+        <!-- Language Selector -->
+        <div class="flex justify-end mb-4">
+            <select id="language-selector" onchange="switchLanguage(this.value)" class="p-2 border border-gray-300 rounded-md shadow-sm">
+                <option value="en">English</option>
+                <option value="zh-tw">繁體中文</option>
+            </select>
+        </div>
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2" data-i18n="title">AI Credit Estimator</h1>
+            <p class="text-lg text-gray-600" data-i18n="subtitle">Calculate your school's AI service usage and find the best plan.</p>
+        </header>
+
+        <!-- Configuration and Plans -->
+        <div class="mb-10 p-6 bg-white rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-700" data-i18n="plans_rates">AI Plans & Rates</h2>
+            <div id="plans-container" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <!-- Plan Cards will be populated here by JavaScript -->
+            </div>
+            <p class="text-sm text-gray-500 mt-4" data-i18n="rates_note">
+                * Rates and credit limits are based on the provided plan structure (Trial: FREE, Basic: 4,920 HKD, Intermediate: 19,200 HKD, Advanced: 49,200 HKD).
+            </p>
+        </div>
+
+        <!-- Task Input Section -->
+        <h2 class="text-2xl font-bold mb-6 text-indigo-700" data-i18n="task_details">Task Details & Calculation</h2>
+
+        <div id="tasks-container" class="space-y-6">
+            <!-- Initial task card -->
+            <div id="task-1" class="task-card bg-white p-6 rounded-xl border border-gray-200">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800 flex justify-between items-center">
+                    <span class="task-number">Task 1</span>
+                    <button onclick="removeTask('task-1')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">Remove</button>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <!-- Task Name -->
+                    <div class="input-group col-span-2">
+                        <label for="task-name-1" class="block text-gray-700" data-i18n="task_name">Task Name</label>
+                        <input type="text" id="task-name-1" value="Chinese Writings" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" data-i18n-placeholder="placeholder_name" placeholder="e.g., History Quiz, Math Homework">
+                    </div>
+                    <!-- Language -->
+                    <div class="input-group">
+                        <label for="task-lang-1" class="block text-gray-700" data-i18n="task_lang">Language</label>
+                        <select id="task-lang-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="chinese" selected data-i18n="lang_chinese">Chinese</option>
+                            <option value="english" data-i18n="lang_english">English</option>
+                            <option value="math" data-i18n="lang_math">Maths</option>
+                        </select>
+                    </div>
+                    <!-- Task Type (SQ/LQ) -->
+                    <div class="input-group">
+                        <label for="task-type-1" class="block text-gray-700" data-i18n="task_type">Type</label>
+                        <select id="task-type-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="sq" data-i18n="type_sq">Short Question (SQ)</option>
+                            <option value="lq" selected data-i18n="type_lq">Long Question (LQ)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Dynamic Input Slot (SQ Tier OR Techniques Checkbox) -->
+                    <div class="input-group relative">
+                        <!-- SQ Tier Selector (visible for English/Chinese SQ only) -->
+                        <div id="sq-tier-group-1" class="absolute w-full" style="display: none;">
+                            <label for="sq-tier-1" class="block text-gray-700" data-i18n="sq_size">SQ Size</label>
+                            <select id="sq-tier-1" onchange="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="10" data-i18n="sq_1x">1x (within 200 words) - 10 Credits</option>
+                                <option value="20" data-i18n="sq_2x">2x (201-400 words) - 20 Credits</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Writing Techniques Checkbox (visible for English/Chinese LQ only) -->
+                        <div class="flex items-center justify-center pt-5" id="techniques-group-1" style="display: none;">
+                            <input type="checkbox" id="task-techniques-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="task-techniques-1" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">Writing Techniques</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <!-- Students -->
+                    <div class="input-group">
+                        <label for="task-students-1" class="block text-gray-700" data-i18n="students">Students</label>
+                        <input type="number" id="task-students-1" value="100" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <!-- Questions/Tasks per Student -->
+                    <div class="input-group">
+                        <label for="task-qty-1" class="block text-gray-700" data-i18n="tasks_per_student">Tasks per Student</label>
+                        <input type="number" id="task-qty-1" value="10" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <!-- Pictures per Question (for OCR) -->
+                    <div class="input-group">
+                        <label for="task-pics-1" class="block text-gray-700" data-i18n="pics_per_task">Pics per Task (OCR)</label>
+                        <input type="number" id="task-pics-1" value="3" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <!-- Class Report -->
+                    <div class="input-group flex items-center justify-center pt-5">
+                        <input type="checkbox" id="task-report-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <label for="task-report-1" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">Include Class Report</label>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
+                    <p class="text-sm font-medium text-indigo-800">
+                        <span data-i18n="credits_for">Credits for</span> <span id="output-name-1">Chinese Writings</span>:
+                        <strong id="output-credits-1" class="text-lg text-indigo-700 ml-2">0</strong>
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+        
+        <button onclick="addTask()" class="mt-6 w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150" data-i18n="add_task">
+            + Add Another Task
+        </button>
+
+        <!-- Summary and Recommendation -->
+        <div class="mt-10 p-8 bg-green-50 rounded-xl shadow-2xl border-4 border-green-200">
+            <h2 class="text-3xl font-bold text-green-700 mb-4" data-i18n="total_req">Total AI Credit Requirement</h2>
+            <p class="text-xl text-gray-700 mb-6">
+                <span data-i18n="total_credits">Total Required Credits:</span>
+                <strong id="total-credits" class="text-4xl text-green-800 ml-2">0</strong>
+            </p>
+
+            <h3 class="text-2xl font-bold text-green-700 mb-3" data-i18n="recommended_plans">Recommended Plan(s)</h3>
+            <div id="recommendation-output" class="text-lg text-gray-800 bg-green-100 p-4 rounded-lg">
+                Please add task details above to see the recommendation.
+            </div>
+            
+            <p class="text-xl font-semibold text-gray-700 mt-6">
+                <span data-i18n="estimated_cost">Estimated Total Cost:</span> 
+                <strong id="total-cost" class="text-3xl text-red-600 ml-2">HKD 0</strong>
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- TRANSLATION DATA ---
+        const MESSAGES = {
+            'en': {
+                title: 'AI Credit Estimator',
+                subtitle: "Calculate your school's AI service usage and find the best plan.",
+                plans_rates: 'AI Plans & Rates',
+                rates_note: '* Rates and credit limits are based on the provided plan structure (Trial: FREE, Basic: 4,920 HKD, Intermediate: 19,200 HKD, Advanced: 49,200 HKD).',
+                task_details: 'Task Details & Calculation',
+                task_name: 'Task Name',
+                task_lang: 'Language',
+                task_type: 'Type',
+                lang_chinese: 'Chinese',
+                lang_english: 'English',
+                lang_math: 'Maths',
+                type_sq: 'Short Question (SQ)',
+                // UPDATED with word limits
+                type_lq: 'Long Question (LQ) (401-3333 words)', 
+                sq_size: 'SQ Size',
+                // UPDATED with word limits
+                sq_1x: '1x (within 200 words) - 10 Credits', 
+                // UPDATED with word limits
+                sq_2x: '2x (201-400 words) - 20 Credits', 
+                writing_techniques: 'Writing Techniques',
+                students: 'Students',
+                tasks_per_student: 'Tasks per Student',
+                pics_per_task: 'Pics per Task (OCR)',
+                include_report: 'Include Class Report',
+                remove: 'Remove',
+                credits_for: 'Credits for',
+                add_task: '+ Add Another Task',
+                total_req: 'Total AI Credit Requirement',
+                total_credits: 'Total Required Credits:',
+                recommended_plans: 'Recommended Plan(s)',
+                placeholder_name: 'e.g., History Quiz, Math Homework',
+                plan_trial: 'Trial',
+                plan_basic: 'Basic',
+                plan_intermediate: 'Intermediate',
+                plan_advanced: 'Advanced',
+                no_credits_required: 'No credits required. Start with the **Trial Plan** for free access.',
+                recommend_summary_1: 'To cover **{requiredCredits}** credits, we recommend the following option:',
+                recommend_summary_2: 'This provides a total of **{totalCredits}** credits.',
+                estimated_cost: 'Estimated Total Cost:',
+            },
+            'zh-tw': {
+                title: 'AI 積分估算器',
+                subtitle: '計算學校的 AI 服務使用量並找出最佳方案。',
+                plans_rates: 'AI 方案與費率',
+                rates_note: '* 費率和積分限制基於提供的方案結構（試用：免費，基本：4,920 港元，中級：19,200 港元，高級：49,200 港元）。',
+                task_details: '任務細節與計算',
+                task_name: '任務名稱',
+                task_lang: '語言',
+                task_type: '類型',
+                lang_chinese: '中文',
+                lang_english: '英文',
+                lang_math: '數學',
+                type_sq: '短問題 (SQ)',
+                // UPDATED with word limits
+                type_lq: '長問題 (LQ) (301-2500 字)',
+                sq_size: 'SQ 篇幅',
+                // UPDATED with word limits
+                sq_1x: '1x (150 字以內) - 10 積分',
+                // UPDATED with word limits
+                sq_2x: '2x (151-300 字) - 20 積分',
+                writing_techniques: '寫作技巧',
+                students: '學生人數',
+                tasks_per_student: '每位學生任務數',
+                pics_per_task: '每個任務圖片數 (OCR)',
+                include_report: '包括班級報告',
+                remove: '移除',
+                credits_for: '積分：',
+                add_task: '+ 新增其他任務',
+                total_req: '總 AI 積分需求',
+                total_credits: '總所需積分：',
+                recommended_plans: '建議方案',
+                placeholder_name: '例如：歷史測驗、數學作業',
+                plan_trial: '試用',
+                plan_basic: '基本',
+                plan_intermediate: '中級',
+                plan_advanced: '高級',
+                no_credits_required: '無需積分。請使用免費的**試用方案**。',
+                recommend_summary_1: '為了涵蓋 **{requiredCredits}** 積分，我們建議以下選項：',
+                recommend_summary_2: '這總共提供了 **{totalCredits}** 積分。',
+                estimated_cost: '估計總成本：',
+            }
+        };
+
+        let currentLanguage = 'en';
+
+        // --- CONFIGURATION DATA ---
+        const CREDIT_RATES = {
+            // OCR (Converting Handwritten Texts/Math Equations)
+            ocr: {
+                english: 1,
+                chinese: 3,
+                math: 3
+            },
+            // Marking/Evaluation
+            marking: {
+                // Math SQ rate is fixed
+                sq_math: 45,
+                lq: {
+                    no_tech: {
+                        english: 45,
+                        chinese: 45,
+                        math: 135
+                    },
+                    with_tech: {
+                        english: 90,
+                        chinese: 135,
+                        // Math does not have a 'with_tech' tier, falls back to no_tech rate (135)
+                        math: 135
+                    }
+                }
+            },
+            // Class Report
+            report: {
+                sq: 0.25,
+                lq: 1
+            }
+        };
+
+        const PLANS = [
+            { name: "Trial", credits: 9600, cost: 0, color: "bg-orange-500", border: "border-orange-700" },
+            { name: "Basic", credits: 60000, cost: 4920, color: "bg-green-500", border: "border-green-700" },
+            { name: "Intermediate", credits: 300000, cost: 19200, color: "bg-blue-500", border: "border-blue-700" },
+            { name: "Advanced", credits: 1200000, cost: 49200, color: "bg-purple-500", border: "border-purple-700" }
+        ];
+
+        let taskIdCounter = 1;
+        const tasksContainer = document.getElementById('tasks-container');
+
+        // --- INTERNATIONALIZATION FUNCTIONS ---
+        function getText(key, lang = currentLanguage) {
+            return MESSAGES[lang][key] || MESSAGES['en'][key] || key;
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            updateUI();
+        }
+
+        function updateUI() {
+            // 1. Update static data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (key) {
+                    el.textContent = getText(key);
+                }
+            });
+
+            // 2. Update placeholder text
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (key) {
+                    el.placeholder = getText(key);
+                }
+            });
+
+            // 3. Update task-specific, dynamic text/options
+            const taskIds = Array.from(tasksContainer.children).map(el => el.id.split('-')[1]);
+            taskIds.forEach(id => {
+                // Update Task Number
+                document.querySelector(`#task-${id} .task-number`).textContent = `${getText('task', currentLanguage)} ${id}`;
+
+                // Update Select options that use i18n
+                document.querySelectorAll(`#task-${id} select option`).forEach(option => {
+                    const key = option.getAttribute('data-i18n');
+                    if (key) {
+                        option.textContent = getText(key);
+                    }
+                });
+                
+                // Recalculate and update the recommendation summary (which is also translated)
+                calculateAll(false); // Only update UI/Rec, don't re-run toggleInputs unnecessarily
+            });
+            
+            // 4. Update Plans
+            renderPlans();
+
+            // 5. Update Document Title
+            document.querySelector('title').textContent = getText('title');
+        }
+
+
+        // --- PLAN DISPLAY SETUP ---
+        function renderPlans() {
+            const container = document.getElementById('plans-container');
+            container.innerHTML = PLANS.map(plan => `
+                <div class="plan-card text-center p-4 rounded-xl border-4 ${plan.border} ${plan.color} text-white">
+                    <div class="text-xs font-semibold uppercase opacity-90" data-i18n="plan_${plan.name.toLowerCase()}">${getText('plan_' + plan.name.toLowerCase())}</div>
+                    <div class="text-2xl font-bold">${plan.credits.toLocaleString()}</div>
+                    <div class="text-sm font-medium">${plan.cost === 0 ? getText('plan_trial') : 'HKD ' + plan.cost.toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+        
+        // --- CORE CALCULATION LOGIC ---
+
+        // Helper function to safely get input value
+        const getNum = (id) => parseFloat(document.getElementById(id)?.value || 0) || 0;
+        const getCheck = (id) => document.getElementById(id)?.checked || false;
+
+        function calculateTaskCredits(id) {
+            const lang = document.getElementById(`task-lang-${id}`)?.value;
+            const type = document.getElementById(`task-type-${id}`)?.value; // 'sq' or 'lq'
+            const students = getNum(`task-students-${id}`);
+            const qty = getNum(`task-qty-${id}`);
+            const pics = getNum(`task-pics-${id}`);
+            const report = getCheck(`task-report-${id}`);
+            const techniques = getCheck(`task-techniques-${id}`);
+            
+            // Validate essential inputs
+            if (students < 1 || qty < 1) return 0;
+
+            // 1. Get OCR Credits
+            const ocrRate = CREDIT_RATES.ocr[lang];
+            const ocrCredits = ocrRate * pics;
+
+            // 2. Get Marking/Evaluation Credits
+            let markingRate;
+            if (type === 'sq') {
+                if (lang === 'math') {
+                    // Fixed 45 credits for Math SQ
+                    markingRate = CREDIT_RATES.marking.sq_math;
+                } else {
+                    // English or Chinese SQ: rate is taken directly from the selected tier (10 or 20)
+                    markingRate = getNum(`sq-tier-${id}`); 
+                }
+            } else { // 'lq'
+                if (techniques && lang !== 'math') {
+                    // Use with_tech rate
+                    markingRate = CREDIT_RATES.marking.lq.with_tech[lang];
+                } else {
+                    // Use no_tech rate (includes Math LQ, which has no 'with_tech' tier)
+                    markingRate = CREDIT_RATES.marking.lq.no_tech[lang];
+                }
+            }
+            
+            // Combined per-student, per-task credits
+            const totalPerTaskCredits = ocrCredits + markingRate;
+            const totalEvaluationCredits = totalPerTaskCredits * students * qty;
+
+            // 3. Get Class Report Credits
+            let totalReportCredits = 0;
+            if (report) {
+                const reportRate = CREDIT_RATES.report[type];
+                totalReportCredits = reportRate * students * qty;
+            }
+
+            const totalCredits = Math.round(totalEvaluationCredits + totalReportCredits);
+            
+            // Update the task output display
+            document.getElementById(`output-credits-${id}`).textContent = totalCredits.toLocaleString();
+            document.getElementById(`output-name-${id}`).textContent = document.getElementById(`task-name-${id}`)?.value || `${getText('task')} ${id}`;
+
+            return totalCredits;
+        }
+        
+        function calculateAll(toggle = true) {
+            // Get all current task IDs
+            const taskIds = Array.from(tasksContainer.children).map(el => el.id.split('-')[1]);
+            let grandTotal = 0;
+
+            taskIds.forEach(id => {
+                if (toggle) toggleInputs(id); 
+                grandTotal += calculateTaskCredits(id);
+            });
+
+            document.getElementById('total-credits').textContent = grandTotal.toLocaleString();
+            recommendPlan(grandTotal);
+        }
+
+        // --- UI MANIPULATION ---
+
+        function toggleInputs(id) {
+            const lang = document.getElementById(`task-lang-${id}`)?.value;
+            const type = document.getElementById(`task-type-${id}`)?.value;
+            const techniquesGroup = document.getElementById(`techniques-group-${id}`);
+            const sqTierGroup = document.getElementById(`sq-tier-group-${id}`);
+
+            if (!techniquesGroup || !sqTierGroup) return; // Guard against missing elements
+
+            // 1. Handle visibility for Short Question (SQ)
+            if (type === 'sq') {
+                techniquesGroup.style.display = 'none'; // Hide techniques checkbox
+
+                if (lang === 'math') {
+                    sqTierGroup.style.display = 'none'; // Hide tier selector for Math (fixed 45 credits)
+                } else {
+                    sqTierGroup.style.display = 'block'; // Show tier selector for English/Chinese
+                }
+
+            } else { // Long Question (LQ)
+                sqTierGroup.style.display = 'none'; // Hide SQ tier selector
+                
+                // 2. Handle visibility for Writing Techniques Checkbox
+                if (lang === 'english' || lang === 'chinese') {
+                    techniquesGroup.style.display = 'flex'; // Show techniques checkbox
+                } else {
+                    techniquesGroup.style.display = 'none'; // Hide for Math LQ
+                    document.getElementById(`task-techniques-${id}`).checked = false; // Ensure it's unchecked if hidden
+                }
+            }
+        }
+
+        function addTask() {
+            taskIdCounter++;
+            const newId = taskIdCounter;
+            const placeholderText = getText('placeholder_name');
+
+            const newTaskHTML = `
+                <div id="task-${newId}" class="task-card bg-white p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800 flex justify-between items-center">
+                        <span class="task-number">${getText('task')} ${newId}</span>
+                        <button onclick="removeTask('task-${newId}')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">${getText('remove')}</button>
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="input-group col-span-2">
+                            <label for="task-name-${newId}" class="block text-gray-700" data-i18n="task_name">${getText('task_name')}</label>
+                            <input type="text" id="task-name-${newId}" value="${getText('new_task_name') || 'New Task'} ${newId}" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="${placeholderText}">
+                        </div>
+                        <div class="input-group">
+                            <label for="task-lang-${newId}" class="block text-gray-700" data-i18n="task_lang">${getText('task_lang')}</label>
+                            <select id="task-lang-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="english" data-i18n="lang_english">${getText('lang_english')}</option>
+                                <option value="chinese" data-i18n="lang_chinese">${getText('lang_chinese')}</option>
+                                <option value="math" data-i18n="lang_math">${getText('lang_math')}</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="task-type-${newId}" class="block text-gray-700" data-i18n="task_type">${getText('task_type')}</label>
+                            <select id="task-type-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="sq" data-i18n="type_sq">${getText('type_sq')}</option>
+                                <option value="lq" data-i18n="type_lq">${getText('type_lq')}</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic Input Slot (SQ Tier OR Techniques Checkbox) -->
+                        <div class="input-group relative">
+                            <!-- SQ Tier Selector (visible for English/Chinese SQ only) -->
+                            <div id="sq-tier-group-${newId}" class="absolute w-full" style="display: none;">
+                                <label for="sq-tier-${newId}" class="block text-gray-700" data-i18n="sq_size">${getText('sq_size')}</label>
+                                <select id="sq-tier-${newId}" onchange="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="10" data-i18n="sq_1x">${getText('sq_1x')}</option>
+                                    <option value="20" data-i18n="sq_2x">${getText('sq_2x')}</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Writing Techniques Checkbox (visible for English/Chinese LQ only) -->
+                            <div class="flex items-center justify-center pt-5" id="techniques-group-${newId}" style="display: none;">
+                                <input type="checkbox" id="task-techniques-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                <label for="task-techniques-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">${getText('writing_techniques')}</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <div class="input-group">
+                            <label for="task-students-${newId}" class="block text-gray-700" data-i18n="students">${getText('students')}</label>
+                            <input type="number" id="task-students-${newId}" value="50" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group">
+                            <label for="task-qty-${newId}" class="block text-gray-700" data-i18n="tasks_per_student">${getText('tasks_per_student')}</label>
+                            <input type="number" id="task-qty-${newId}" value="5" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group">
+                            <label for="task-pics-${newId}" class="block text-gray-700" data-i18n="pics_per_task">${getText('pics_per_task')}</label>
+                            <input type="number" id="task-pics-${newId}" value="1" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group flex items-center justify-center pt-5">
+                            <input type="checkbox" id="task-report-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="task-report-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">${getText('include_report')}</label>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
+                        <p class="text-sm font-medium text-indigo-800">
+                            <span data-i18n="credits_for">${getText('credits_for')}</span> <span id="output-name-${newId}">New Task ${newId}</span>:
+                            <strong id="output-credits-${newId}" class="text-lg text-indigo-700 ml-2">0</strong>
+                        </p>
+                    </div>
+                </div>
+            `;
+            tasksContainer.insertAdjacentHTML('beforeend', newTaskHTML);
+            toggleInputs(newId);
+            calculateAll();
+        }
+
+        function removeTask(taskId) {
+            const taskElement = document.getElementById(taskId);
+            if (taskElement) {
+                taskElement.remove();
+                calculateAll(); // Recalculate total after removal
+            }
+            if (tasksContainer.children.length === 0) {
+                 // Re-add a default task if the list is empty
+                 addTask();
+                 // Reset counter to 1 for next new task added
+                 taskIdCounter = 1;
+            }
+        }
+
+
+        // --- PLAN OPTIMIZATION LOGIC ---
+
+        function recommendPlan(requiredCredits) {
+            const outputEl = document.getElementById('recommendation-output');
+            const costEl = document.getElementById('total-cost');
+            const planCards = document.querySelectorAll('.plan-card');
+
+            // Reset UI
+            planCards.forEach(card => card.classList.remove('active'));
+            outputEl.innerHTML = `${getText('recommended_plans')}...`; // Update loading message
+            costEl.textContent = `HKD 0`;
+            
+            if (requiredCredits <= 0) {
+                outputEl.innerHTML = getText('no_credits_required');
+                costEl.textContent = `HKD 0`;
+                return;
+            }
+
+            // --- Optimization Algorithm (Greedy Approach for minimum cost) ---
+            
+            const advancedPlan = PLANS.find(p => p.name === 'Advanced');
+            const intermediatePlan = PLANS.find(p => p.name === 'Intermediate');
+            const basicPlan = PLANS.find(p => p.name === 'Basic');
+            const trialPlan = PLANS.find(p => p.name === 'Trial');
+
+            let bestCombination = { plans: [], cost: Infinity, credits: 0 };
+            
+            // 4. Trial Plan check (if credits are low)
+            if (requiredCredits <= trialPlan.credits) {
+                bestCombination = { plans: [{ name: 'Trial', count: 1 }], cost: 0, credits: trialPlan.credits };
+            }
+
+            // 1. Only Advanced Plan needed?
+            let numAdv = Math.ceil(requiredCredits / advancedPlan.credits);
+            let costAdv = numAdv * advancedPlan.cost;
+            if (costAdv < bestCombination.cost) {
+                bestCombination = { 
+                    plans: [{ name: 'Advanced', count: numAdv }], 
+                    cost: costAdv, 
+                    credits: numAdv * advancedPlan.credits 
+                };
+            }
+            
+            // 2. Only Intermediate Plans needed?
+            let numInt = Math.ceil(requiredCredits / intermediatePlan.credits);
+            let costInt = numInt * intermediatePlan.cost;
+            if (costInt < bestCombination.cost) {
+                bestCombination = { 
+                    plans: [{ name: 'Intermediate', count: numInt }], 
+                    cost: costInt, 
+                    credits: numInt * intermediatePlan.credits 
+                };
+            }
+
+            // 3. Only Basic Plans needed? (Only check if total credits are less than Intermediate cost)
+            // A more comprehensive check could involve combinations, but this checks single-plan-type efficiency
+            if (requiredCredits < intermediatePlan.credits) {
+                let numBas = Math.ceil(requiredCredits / basicPlan.credits);
+                let costBas = numBas * basicPlan.cost;
+                 if (costBas < bestCombination.cost) {
+                    bestCombination = { 
+                        plans: [{ name: 'Basic', count: numBas }], 
+                        cost: costBas, 
+                        credits: numBas * basicPlan.credits 
+                    };
+                }
+            }
+            
+            // --- Output Formatting ---
+            
+            // Format the list of plans (e.g., "2 Intermediate Plans")
+            const planStrings = bestCombination.plans
+                .filter(p => p.count > 0)
+                .map(p => `${p.count} x **${getText('plan_' + p.name.toLowerCase())}**`);
+
+            const requiredCreditsStr = requiredCredits.toLocaleString();
+            const totalCreditsStr = bestCombination.credits.toLocaleString();
+            
+            const summary1 = getText('recommend_summary_1').replace('{requiredCredits}', requiredCreditsStr);
+            const summary2 = getText('recommend_summary_2').replace('{totalCredits}', totalCreditsStr);
+
+            outputEl.innerHTML = `
+                <p>${summary1}</p>
+                <ul class="list-disc list-inside ml-4 mt-2 font-medium">
+                    <li>${planStrings.join('</li><li>')}</li>
+                </ul>
+                <p class="mt-2">${summary2}</p>
+            `;
+            costEl.textContent = `HKD ${bestCombination.cost.toLocaleString()}`;
+
+            // Highlight the recommended plan card(s)
+            bestCombination.plans.forEach(rec => {
+                const plan = PLANS.find(p => p.name === rec.name);
+                if (plan) {
+                    const cardIndex = PLANS.indexOf(plan);
+                    if (cardIndex !== -1) {
+                         planCards[cardIndex].classList.add('active');
+                    }
+                }
+            });
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // Get browser language or default to English
+            const defaultLang = 'en';
+            
+            // Set initial language and update selector
+            currentLanguage = defaultLang;
+            document.getElementById('language-selector').value = currentLanguage;
+
+            // Render plans and elements in the initial language
+            renderPlans();
+            updateUI();
+            
+            // Attach event listeners to initial task inputs for real-time calculation
+            const initialInputs = document.querySelectorAll('#task-1 input, #task-1 select');
+            initialInputs.forEach(input => {
+                input.addEventListener('input', () => calculateAll(true));
+                input.addEventListener('change', () => calculateAll(true));
+            });
+
+            // Initial calculation must run after event listeners are attached and DOM is ready
+            toggleInputs(1);
+            calculateAll();
+        }
+    </script>
+</body>
+</html>
