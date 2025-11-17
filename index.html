@@ -13,11 +13,11 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7f9fb;
         }
-        .task-card {
+        .subject-card {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
             transition: all 0.2s ease-in-out;
         }
-        .task-card:hover {
+        .subject-card:hover {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
             transform: translateY(-2px);
         }
@@ -64,37 +64,37 @@
             </p>
         </div>
 
-        <!-- Task Input Section -->
-        <h2 class="text-2xl font-bold mb-6 text-indigo-700" data-i18n="task_details">Task Details & Calculation</h2>
+        <!-- Subject Input Section -->
+        <h2 class="text-2xl font-bold mb-6 text-indigo-700" data-i18n="subject_details">Subject Details & Calculation</h2>
 
-        <div id="tasks-container" class="space-y-6">
-            <!-- Initial task card -->
-            <div id="task-1" class="task-card bg-white p-6 rounded-xl border border-gray-200">
+        <div id="subjects-container" class="space-y-6">
+            <!-- Initial subject card -->
+            <div id="subject-1" class="subject-card bg-white p-6 rounded-xl border border-gray-200">
                 <h3 class="text-xl font-semibold mb-4 text-gray-800 flex justify-between items-center">
-                    <span class="task-number">Task 1</span>
-                    <button onclick="removeTask('task-1')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">Remove</button>
+                    <span class="subject-number" data-i18n="subject">Subject 1</span>
+                    <button onclick="removeSubject('subject-1')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">Remove</button>
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <!-- Task Name -->
+                    <!-- Subject Name -->
                     <div class="input-group col-span-2">
-                        <label for="task-name-1" class="block text-gray-700" data-i18n="task_name">Task Name</label>
-                        <input type="text" id="task-name-1" value="Chinese Writings" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" data-i18n-placeholder="placeholder_name" placeholder="e.g., History Quiz, Math Homework">
+                        <label for="subject-name-1" class="block text-gray-700" data-i18n="subject_name">Subject Name</label>
+                        <input type="text" id="subject-name-1" value="Chinese Writings" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" data-i18n-placeholder="placeholder_name" placeholder="e.g., History Quiz, Math Homework">
                     </div>
                     <!-- Language -->
                     <div class="input-group">
-                        <label for="task-lang-1" class="block text-gray-700" data-i18n="task_lang">Language</label>
-                        <select id="task-lang-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="subject-lang-1" class="block text-gray-700" data-i18n="subject_lang">Language</label>
+                        <select id="subject-lang-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="chinese" selected data-i18n="lang_chinese">Chinese</option>
                             <option value="english" data-i18n="lang_english">English</option>
                             <option value="math" data-i18n="lang_math">Maths</option>
                         </select>
                     </div>
-                    <!-- Task Type (SQ/LQ) -->
+                    <!-- Subject Type (SQ/LQ) -->
                     <div class="input-group">
-                        <label for="task-type-1" class="block text-gray-700" data-i18n="task_type">Type</label>
-                        <select id="task-type-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="subject-type-1" class="block text-gray-700" data-i18n="subject_type">Type</label>
+                        <select id="subject-type-1" onchange="calculateAll(); toggleInputs(1);" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="sq" data-i18n="type_sq">Short Question (SQ)</option>
-                            <option value="lq" selected data-i18n="type_lq">Long Question (LQ)</option>
+                            <option value="lq" selected data-i18n="type_lq">Long Question (LQ) (401-3333 words)</option>
                         </select>
                     </div>
                     
@@ -111,32 +111,37 @@
                         
                         <!-- Writing Techniques Checkbox (visible for English/Chinese LQ only) -->
                         <div class="flex items-center justify-center pt-5" id="techniques-group-1" style="display: none;">
-                            <input type="checkbox" id="task-techniques-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="task-techniques-1" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">Writing Techniques</label>
+                            <input type="checkbox" id="subject-techniques-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="subject-techniques-1" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">Writing Techniques</label>
                         </div>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
                     <!-- Students -->
                     <div class="input-group">
-                        <label for="task-students-1" class="block text-gray-700" data-i18n="students">Students</label>
-                        <input type="number" id="task-students-1" value="100" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="subject-students-1" class="block text-gray-700" data-i18n="students">Students</label>
+                        <input type="number" id="subject-students-1" value="100" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <!-- Questions/Tasks per Student -->
+                    <!-- Questions per Student -->
                     <div class="input-group">
-                        <label for="task-qty-1" class="block text-gray-700" data-i18n="tasks_per_student">Tasks per Student</label>
-                        <input type="number" id="task-qty-1" value="10" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="subject-qty-1" class="block text-gray-700" data-i18n="questions_per_student">Questions per Student</label>
+                        <input type="number" id="subject-qty-1" value="10" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <!-- Submissions per Question -->
+                    <div class="input-group">
+                        <label for="subject-submissions-1" class="block text-gray-700" data-i18n="submissions_per_question">Submissions per Question</label>
+                        <input type="number" id="subject-submissions-1" value="1" min="1" max="3" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <!-- Pictures per Question (for OCR) -->
                     <div class="input-group">
-                        <label for="task-pics-1" class="block text-gray-700" data-i18n="pics_per_task">Pics per Task (OCR)</label>
-                        <input type="number" id="task-pics-1" value="3" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="subject-pics-1" class="block text-gray-700" data-i18n="pics_per_question">Pics per Question (OCR)</label>
+                        <input type="number" id="subject-pics-1" value="3" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <!-- Class Report -->
                     <div class="input-group flex items-center justify-center pt-5">
-                        <input type="checkbox" id="task-report-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                        <label for="task-report-1" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">Include Class Report</label>
+                        <input type="checkbox" id="subject-report-1" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <label for="subject-report-1" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">Include Class Report</label>
                     </div>
                 </div>
 
@@ -150,8 +155,8 @@
             
         </div>
         
-        <button onclick="addTask()" class="mt-6 w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150" data-i18n="add_task">
-            + Add Another Task
+        <button onclick="addSubject()" class="mt-6 w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150" data-i18n="add_subject">
+            + Add Another Subject
         </button>
 
         <!-- Summary and Recommendation -->
@@ -164,7 +169,7 @@
 
             <h3 class="text-2xl font-bold text-green-700 mb-3" data-i18n="recommended_plans">Recommended Plan(s)</h3>
             <div id="recommendation-output" class="text-lg text-gray-800 bg-green-100 p-4 rounded-lg">
-                Please add task details above to see the recommendation.
+                Please add subject details above to see the recommendation.
             </div>
             
             <p class="text-xl font-semibold text-gray-700 mt-6">
@@ -183,29 +188,28 @@
                 subtitle: "Calculate your school's AI service usage and find the best plan.",
                 plans_rates: 'AI Plans & Rates',
                 rates_note: '* Rates and credit limits are based on the provided plan structure (Trial: FREE, Basic: 4,920 HKD, Intermediate: 19,200 HKD, Advanced: 49,200 HKD).',
-                task_details: 'Task Details & Calculation',
-                task_name: 'Task Name',
-                task_lang: 'Language',
-                task_type: 'Type',
+                subject_details: 'Subject Details & Calculation',
+                subject: 'Subject', 
+                subject_name: 'Subject Name', 
+                subject_lang: 'Language',
+                subject_type: 'Type',
                 lang_chinese: 'Chinese',
                 lang_english: 'English',
                 lang_math: 'Maths',
                 type_sq: 'Short Question (SQ)',
-                // UPDATED with word limits
                 type_lq: 'Long Question (LQ) (401-3333 words)', 
                 sq_size: 'SQ Size',
-                // UPDATED with word limits
                 sq_1x: '1x (within 200 words) - 10 Credits', 
-                // UPDATED with word limits
                 sq_2x: '2x (201-400 words) - 20 Credits', 
                 writing_techniques: 'Writing Techniques',
                 students: 'Students',
-                tasks_per_student: 'Tasks per Student',
-                pics_per_task: 'Pics per Task (OCR)',
+                questions_per_student: 'Questions per Student', 
+                submissions_per_question: 'Submissions per Question', // NEW
+                pics_per_question: 'Pics per Question (OCR)',
                 include_report: 'Include Class Report',
                 remove: 'Remove',
                 credits_for: 'Credits for',
-                add_task: '+ Add Another Task',
+                add_subject: '+ Add Another Subject', 
                 total_req: 'Total AI Credit Requirement',
                 total_credits: 'Total Required Credits:',
                 recommended_plans: 'Recommended Plan(s)',
@@ -224,29 +228,28 @@
                 subtitle: '計算學校的 AI 服務使用量並找出最佳方案。',
                 plans_rates: 'AI 方案與費率',
                 rates_note: '* 費率和積分限制基於提供的方案結構（試用：免費，基本：4,920 港元，中級：19,200 港元，高級：49,200 港元）。',
-                task_details: '任務細節與計算',
-                task_name: '任務名稱',
-                task_lang: '語言',
-                task_type: '類型',
+                subject_details: '科目細節與計算', 
+                subject: '科目', 
+                subject_name: '科目名稱', 
+                subject_lang: '語言',
+                subject_type: '類型',
                 lang_chinese: '中文',
                 lang_english: '英文',
                 lang_math: '數學',
                 type_sq: '短問題 (SQ)',
-                // UPDATED with word limits
                 type_lq: '長問題 (LQ) (301-2500 字)',
                 sq_size: 'SQ 篇幅',
-                // UPDATED with word limits
                 sq_1x: '1x (150 字以內) - 10 積分',
-                // UPDATED with word limits
                 sq_2x: '2x (151-300 字) - 20 積分',
                 writing_techniques: '寫作技巧',
                 students: '學生人數',
-                tasks_per_student: '每位學生任務數',
-                pics_per_task: '每個任務圖片數 (OCR)',
+                questions_per_student: '每位學生問題數', 
+                submissions_per_question: '每個問題提交次數', // NEW
+                pics_per_question: '每個問題圖片數 (OCR)', 
                 include_report: '包括班級報告',
                 remove: '移除',
                 credits_for: '積分：',
-                add_task: '+ 新增其他任務',
+                add_subject: '+ 新增其他科目', 
                 total_req: '總 AI 積分需求',
                 total_credits: '總所需積分：',
                 recommended_plans: '建議方案',
@@ -304,8 +307,8 @@
             { name: "Advanced", credits: 1200000, cost: 49200, color: "bg-purple-500", border: "border-purple-700" }
         ];
 
-        let taskIdCounter = 1;
-        const tasksContainer = document.getElementById('tasks-container');
+        let subjectIdCounter = 1;
+        const subjectsContainer = document.getElementById('subjects-container');
 
         // --- INTERNATIONALIZATION FUNCTIONS ---
         function getText(key, lang = currentLanguage) {
@@ -334,14 +337,14 @@
                 }
             });
 
-            // 3. Update task-specific, dynamic text/options
-            const taskIds = Array.from(tasksContainer.children).map(el => el.id.split('-')[1]);
-            taskIds.forEach(id => {
-                // Update Task Number
-                document.querySelector(`#task-${id} .task-number`).textContent = `${getText('task', currentLanguage)} ${id}`;
+            // 3. Update subject-specific, dynamic text/options
+            const subjectIds = Array.from(subjectsContainer.children).map(el => el.id.split('-')[1]);
+            subjectIds.forEach(id => {
+                // Update Subject Number
+                document.querySelector(`#subject-${id} .subject-number`).textContent = `${getText('subject', currentLanguage)} ${id}`;
 
                 // Update Select options that use i18n
-                document.querySelectorAll(`#task-${id} select option`).forEach(option => {
+                document.querySelectorAll(`#subject-${id} select option`).forEach(option => {
                     const key = option.getAttribute('data-i18n');
                     if (key) {
                         option.textContent = getText(key);
@@ -378,70 +381,80 @@
         const getNum = (id) => parseFloat(document.getElementById(id)?.value || 0) || 0;
         const getCheck = (id) => document.getElementById(id)?.checked || false;
 
-        function calculateTaskCredits(id) {
-            const lang = document.getElementById(`task-lang-${id}`)?.value;
-            const type = document.getElementById(`task-type-${id}`)?.value; // 'sq' or 'lq'
-            const students = getNum(`task-students-${id}`);
-            const qty = getNum(`task-qty-${id}`);
-            const pics = getNum(`task-pics-${id}`);
-            const report = getCheck(`task-report-${id}`);
-            const techniques = getCheck(`task-techniques-${id}`);
+        function calculateSubjectCredits(id) {
+            const lang = document.getElementById(`subject-lang-${id}`)?.value;
+            const type = document.getElementById(`subject-type-${id}`)?.value; // 'sq' or 'lq'
+            const students = getNum(`subject-students-${id}`);
+            const qty = getNum(`subject-qty-${id}`); // Questions per student
+            const submissions = getNum(`subject-submissions-${id}`); // NEW: Submissions per question
+            const pics = getNum(`subject-pics-${id}`); // Pics per question
+            const report = getCheck(`subject-report-${id}`);
+            const techniques = getCheck(`subject-techniques-${id}`);
             
             // Validate essential inputs
             if (students < 1 || qty < 1) return 0;
+            // Ensure submissions is at least 1 for valid calculation
+            const submissionMultiplier = Math.max(1, Math.min(3, submissions)); 
 
-            // 1. Get OCR Credits
+
+            // 1. Get OCR Credits (Per Submission Cost)
             const ocrRate = CREDIT_RATES.ocr[lang];
-            const ocrCredits = ocrRate * pics;
+            const ocrCreditsPerSubmission = ocrRate * pics;
 
-            // 2. Get Marking/Evaluation Credits
-            let markingRate;
+            // 2. Get Marking/Evaluation Credits (Per Submission Cost)
+            let markingRatePerSubmission;
             if (type === 'sq') {
                 if (lang === 'math') {
                     // Fixed 45 credits for Math SQ
-                    markingRate = CREDIT_RATES.marking.sq_math;
+                    markingRatePerSubmission = CREDIT_RATES.marking.sq_math;
                 } else {
                     // English or Chinese SQ: rate is taken directly from the selected tier (10 or 20)
-                    markingRate = getNum(`sq-tier-${id}`); 
+                    markingRatePerSubmission = getNum(`sq-tier-${id}`); 
                 }
             } else { // 'lq'
                 if (techniques && lang !== 'math') {
                     // Use with_tech rate
-                    markingRate = CREDIT_RATES.marking.lq.with_tech[lang];
+                    markingRatePerSubmission = CREDIT_RATES.marking.lq.with_tech[lang];
                 } else {
-                    // Use no_tech rate (includes Math LQ, which has no 'with_tech' tier)
-                    markingRate = CREDIT_RATES.marking.lq.no_tech[lang];
+                    // Use no_tech rate (includes Math LQ)
+                    markingRatePerSubmission = CREDIT_RATES.marking.lq.no_tech[lang];
                 }
             }
             
-            // Combined per-student, per-task credits
-            const totalPerTaskCredits = ocrCredits + markingRate;
-            const totalEvaluationCredits = totalPerTaskCredits * students * qty;
+            // --- CALCULATION REFACTOR ---
+            
+            // A. TOTAL SUBMISSION-BASED CREDITS (OCR + Marking)
+            // This cost is incurred for every submission by every student for every question.
+            const totalPerSubmissionCost = ocrCreditsPerSubmission + markingRatePerSubmission;
+            
+            const totalSubmissionCredits = totalPerSubmissionCost * students * qty * submissionMultiplier;
 
-            // 3. Get Class Report Credits
+            // B. TOTAL REPORT CREDITS (Per Question Unit Cost)
+            // This cost is generally incurred only once per student for a set of questions, regardless of submissions.
             let totalReportCredits = 0;
             if (report) {
                 const reportRate = CREDIT_RATES.report[type];
                 totalReportCredits = reportRate * students * qty;
             }
 
-            const totalCredits = Math.round(totalEvaluationCredits + totalReportCredits);
+            // C. GRAND TOTAL
+            const totalCredits = Math.round(totalSubmissionCredits + totalReportCredits);
             
-            // Update the task output display
+            // Update the subject output display
             document.getElementById(`output-credits-${id}`).textContent = totalCredits.toLocaleString();
-            document.getElementById(`output-name-${id}`).textContent = document.getElementById(`task-name-${id}`)?.value || `${getText('task')} ${id}`;
+            document.getElementById(`output-name-${id}`).textContent = document.getElementById(`subject-name-${id}`)?.value || `${getText('subject')} ${id}`;
 
             return totalCredits;
         }
         
         function calculateAll(toggle = true) {
-            // Get all current task IDs
-            const taskIds = Array.from(tasksContainer.children).map(el => el.id.split('-')[1]);
+            // Get all current subject IDs
+            const subjectIds = Array.from(subjectsContainer.children).map(el => el.id.split('-')[1]);
             let grandTotal = 0;
 
-            taskIds.forEach(id => {
+            subjectIds.forEach(id => {
                 if (toggle) toggleInputs(id); 
-                grandTotal += calculateTaskCredits(id);
+                grandTotal += calculateSubjectCredits(id);
             });
 
             document.getElementById('total-credits').textContent = grandTotal.toLocaleString();
@@ -451,8 +464,8 @@
         // --- UI MANIPULATION ---
 
         function toggleInputs(id) {
-            const lang = document.getElementById(`task-lang-${id}`)?.value;
-            const type = document.getElementById(`task-type-${id}`)?.value;
+            const lang = document.getElementById(`subject-lang-${id}`)?.value;
+            const type = document.getElementById(`subject-type-${id}`)?.value;
             const techniquesGroup = document.getElementById(`techniques-group-${id}`);
             const sqTierGroup = document.getElementById(`sq-tier-group-${id}`);
 
@@ -476,38 +489,38 @@
                     techniquesGroup.style.display = 'flex'; // Show techniques checkbox
                 } else {
                     techniquesGroup.style.display = 'none'; // Hide for Math LQ
-                    document.getElementById(`task-techniques-${id}`).checked = false; // Ensure it's unchecked if hidden
+                    document.getElementById(`subject-techniques-${id}`).checked = false; // Ensure it's unchecked if hidden
                 }
             }
         }
 
-        function addTask() {
-            taskIdCounter++;
-            const newId = taskIdCounter;
+        function addSubject() {
+            subjectIdCounter++;
+            const newId = subjectIdCounter;
             const placeholderText = getText('placeholder_name');
 
-            const newTaskHTML = `
-                <div id="task-${newId}" class="task-card bg-white p-6 rounded-xl border border-gray-200">
+            const newSubjectHTML = `
+                <div id="subject-${newId}" class="subject-card bg-white p-6 rounded-xl border border-gray-200">
                     <h3 class="text-xl font-semibold mb-4 text-gray-800 flex justify-between items-center">
-                        <span class="task-number">${getText('task')} ${newId}</span>
-                        <button onclick="removeTask('task-${newId}')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">${getText('remove')}</button>
+                        <span class="subject-number">${getText('subject')} ${newId}</span>
+                        <button onclick="removeSubject('subject-${newId}')" class="text-red-500 hover:text-red-700 text-sm font-normal" data-i18n="remove">${getText('remove')}</button>
                     </h3>
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="input-group col-span-2">
-                            <label for="task-name-${newId}" class="block text-gray-700" data-i18n="task_name">${getText('task_name')}</label>
-                            <input type="text" id="task-name-${newId}" value="${getText('new_task_name') || 'New Task'} ${newId}" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="${placeholderText}">
+                            <label for="subject-name-${newId}" class="block text-gray-700" data-i18n="subject_name">${getText('subject_name')}</label>
+                            <input type="text" id="subject-name-${newId}" value="${getText('subject')} ${newId}" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="${placeholderText}">
                         </div>
                         <div class="input-group">
-                            <label for="task-lang-${newId}" class="block text-gray-700" data-i18n="task_lang">${getText('task_lang')}</label>
-                            <select id="task-lang-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="subject-lang-${newId}" class="block text-gray-700" data-i18n="subject_lang">${getText('subject_lang')}</label>
+                            <select id="subject-lang-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="english" data-i18n="lang_english">${getText('lang_english')}</option>
                                 <option value="chinese" data-i18n="lang_chinese">${getText('lang_chinese')}</option>
                                 <option value="math" data-i18n="lang_math">${getText('lang_math')}</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="task-type-${newId}" class="block text-gray-700" data-i18n="task_type">${getText('task_type')}</label>
-                            <select id="task-type-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="subject-type-${newId}" class="block text-gray-700" data-i18n="subject_type">${getText('subject_type')}</label>
+                            <select id="subject-type-${newId}" onchange="calculateAll(); toggleInputs(${newId});" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="sq" data-i18n="type_sq">${getText('type_sq')}</option>
                                 <option value="lq" data-i18n="type_lq">${getText('type_lq')}</option>
                             </select>
@@ -526,55 +539,59 @@
                             
                             <!-- Writing Techniques Checkbox (visible for English/Chinese LQ only) -->
                             <div class="flex items-center justify-center pt-5" id="techniques-group-${newId}" style="display: none;">
-                                <input type="checkbox" id="task-techniques-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <label for="task-techniques-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">${getText('writing_techniques')}</label>
+                                <input type="checkbox" id="subject-techniques-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                <label for="subject-techniques-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="writing_techniques">${getText('writing_techniques')}</label>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
                         <div class="input-group">
-                            <label for="task-students-${newId}" class="block text-gray-700" data-i18n="students">${getText('students')}</label>
-                            <input type="number" id="task-students-${newId}" value="50" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="subject-students-${newId}" class="block text-gray-700" data-i18n="students">${getText('students')}</label>
+                            <input type="number" id="subject-students-${newId}" value="50" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="input-group">
-                            <label for="task-qty-${newId}" class="block text-gray-700" data-i18n="tasks_per_student">${getText('tasks_per_student')}</label>
-                            <input type="number" id="task-qty-${newId}" value="5" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="subject-qty-${newId}" class="block text-gray-700" data-i18n="questions_per_student">${getText('questions_per_student')}</label>
+                            <input type="number" id="subject-qty-${newId}" value="5" min="1" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="input-group">
-                            <label for="task-pics-${newId}" class="block text-gray-700" data-i18n="pics_per_task">${getText('pics_per_task')}</label>
-                            <input type="number" id="task-pics-${newId}" value="1" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="subject-submissions-${newId}" class="block text-gray-700" data-i18n="submissions_per_question">${getText('submissions_per_question')}</label>
+                            <input type="number" id="subject-submissions-${newId}" value="1" min="1" max="3" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group">
+                            <label for="subject-pics-${newId}" class="block text-gray-700" data-i18n="pics_per_question">${getText('pics_per_question')}</label>
+                            <input type="number" id="subject-pics-${newId}" value="1" min="0" oninput="calculateAll()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="input-group flex items-center justify-center pt-5">
-                            <input type="checkbox" id="task-report-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="task-report-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">${getText('include_report')}</label>
+                            <input type="checkbox" id="subject-report-${newId}" onchange="calculateAll()" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="subject-report-${newId}" class="ml-2 text-gray-700 font-normal" data-i18n="include_report">${getText('include_report')}</label>
                         </div>
                     </div>
 
                     <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
                         <p class="text-sm font-medium text-indigo-800">
-                            <span data-i18n="credits_for">${getText('credits_for')}</span> <span id="output-name-${newId}">New Task ${newId}</span>:
+                            <span data-i18n="credits_for">${getText('credits_for')}</span> <span id="output-name-${newId}">New Subject ${newId}</span>:
                             <strong id="output-credits-${newId}" class="text-lg text-indigo-700 ml-2">0</strong>
                         </p>
                     </div>
                 </div>
             `;
-            tasksContainer.insertAdjacentHTML('beforeend', newTaskHTML);
+            subjectsContainer.insertAdjacentHTML('beforeend', newSubjectHTML);
             toggleInputs(newId);
             calculateAll();
         }
 
-        function removeTask(taskId) {
-            const taskElement = document.getElementById(taskId);
-            if (taskElement) {
-                taskElement.remove();
+        function removeSubject(subjectId) {
+            const subjectElement = document.getElementById(subjectId);
+            if (subjectElement) {
+                subjectElement.remove();
                 calculateAll(); // Recalculate total after removal
             }
-            if (tasksContainer.children.length === 0) {
-                 // Re-add a default task if the list is empty
-                 addTask();
-                 // Reset counter to 1 for next new task added
-                 taskIdCounter = 1;
+            if (subjectsContainer.children.length === 0) {
+                 // Re-add a default subject if the list is empty
+                 addSubject();
+                 // Reset counter to 1 for next new subject added
+                 subjectIdCounter = 1;
             }
         }
 
@@ -588,7 +605,7 @@
 
             // Reset UI
             planCards.forEach(card => card.classList.remove('active'));
-            outputEl.innerHTML = `${getText('recommended_plans')}...`; // Update loading message
+            outputEl.innerHTML = `Calculating...`; // Update loading message
             costEl.textContent = `HKD 0`;
             
             if (requiredCredits <= 0) {
@@ -634,7 +651,6 @@
             }
 
             // 3. Only Basic Plans needed? (Only check if total credits are less than Intermediate cost)
-            // A more comprehensive check could involve combinations, but this checks single-plan-type efficiency
             if (requiredCredits < intermediatePlan.credits) {
                 let numBas = Math.ceil(requiredCredits / basicPlan.credits);
                 let costBas = numBas * basicPlan.cost;
@@ -694,8 +710,8 @@
             renderPlans();
             updateUI();
             
-            // Attach event listeners to initial task inputs for real-time calculation
-            const initialInputs = document.querySelectorAll('#task-1 input, #task-1 select');
+            // Attach event listeners to initial subject inputs for real-time calculation
+            const initialInputs = document.querySelectorAll('#subject-1 input, #subject-1 select');
             initialInputs.forEach(input => {
                 input.addEventListener('input', () => calculateAll(true));
                 input.addEventListener('change', () => calculateAll(true));
